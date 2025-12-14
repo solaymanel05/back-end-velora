@@ -1,136 +1,113 @@
 const express = require("express");
-//mongodb+srv://solaymanel673_db_user:<db_password>@veloradb.ldsupiq.mongodb.net/?appName=veloraDB
-const app = express();
 const mongoose = require("mongoose");
+const cors = require("cors");
+const Order = require("./models/Order");
+
+const app = express();
+
+// ===== MONGO CONNECT =====
 mongoose
   .connect(
-    "mongodb+srv://solaymanel673_db_user:aZdz8pNTGXtOvE9E@veloradb.ldsupiq.mongodb.net/?appName=veloraDB"
+    "mongodb+srv://solaymanel673_db_user:aZdz8pNTGXtOvE9E@veloradb.ldsupiq.mongodb.net/?retryWrites=true&w=majority"
   )
-  .then(() => {
-    console.log("Connecting Successfuly")
-  })
-  .catch((error) => {
-    console.log("Error in connecting ",error)
-  });
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.log("Mongo Error:", err));
+
+// Middleware
 app.use(express.json());
+app.use(cors());
 
-// const Article = require("./models/Article")
-
-
-// // =======  ARTICLES ENDPOINT  =======
-// app.post("/article", async (req,res) => {
-//   const newArticle = new Article()
-//   const artTitle = req.body.titleArticle
-//   const artPrice = req.body.priceArticle
-//   const artCategory = req.body.categoryArticle
-//   newArticle.title = artTitle
-//   newArticle.price = artPrice
-//   newArticle.category = artCategory
-
-//   await newArticle.save()
-//  res.json(newArticle)
-// })
-
-// app.get("/article/:articleId" , async (req,res) => {
-//   // const articles = await Article.find()
-//   const id = req.params.articleId
-//   try{
-//    const article = await Article.findById(id)
-//    res.json(article)
-//    return
-//   }catch(error){
-//     console.log("error not found correct",id)
-//     return res.send("error")
-   
-//   }
-   
+// Sample Products (static)
+const products = [
+  {
+    id: 1,
+    name: "Classic White T-Shirt",
+    price: 149,
+    image:
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
+    description:
+      "T-shirt أبيض كلاسيكي بخامة قطن 100%، مريح للاستعمال اليومي وكيجي مع جميع الستايلات، مناسب للصيف واللبس اليومي."
+  },
+  {
+    id: 2,
+    name: "Oversized Black Hoodie",
+    price: 349,
+    image:
+      "https://images.unsplash.com/photo-1520975916090-3105956dac38",
+    description:
+      "هودي أسود ستايل oversized، دافئ وعصري، مثالي لفصل الخريف والشتاء ولمظهر streetwear أنيق."
+  },
+  {
+    id: 3,
+    name: "Slim Fit Blue Jeans",
+    price: 399,
+    image:
+      "https://images.unsplash.com/photo-1542272604-787c3835535d",
+    description:
+      "جينز أزرق slim fit بتصميم عصري، مرن ومريح، كيناسب اللبس اليومي والخروج."
+  },
+  {
+    id: 4,
+    name: "Beige Casual Jacket",
+    price: 599,
+    image:
+      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b",
+    description:
+      "جاكيت كاجوال باللون البيج، خفيف وأنيق، مثالي للتنسيق مع تي-شيرت أو قميص."
+  },
   
-// })
+  {
+    id: 6,
+    name: "Sport Sneakers White",
+    price: 459,
+    image:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
+    description:
+      "حذاء رياضي أبيض مريح وخفيف، مناسب للمشي واللبس اليومي مع جميع الإطلالات."
+  }
+];
 
-// app.delete("/article/:articleId" , async (req,res) => {
-//   // const articles = await Article.find()
-//   const id = req.params.articleId
-//   try{
-//    const article = await Article.findByIdAndDelete(id)
-//    res.json(article)
-//    return
-//   }catch(error){
-//     console.log("error not found correct",id)
-//     return res.send("error")
-   
-//   }
-   
-  
-// })
-// app.get("/allArticles",async (req, res) => {
-//   const articles = await Article.find()
-//   res.render("articles.ejs", {
-//     allArticles: articles,
-//    });
-// });
-
-// app.post("/delete/:id", async (req, res) => {
-//   try {
-//     await Article.findByIdAndDelete(req.params.id)
-//     res.redirect("/Allarticles") // or your page route
-//   } catch (err) {
-//     res.status(500).send(err.message)
-//   }
-// })
-
-
-
-// //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-// app.get("/velora", (req, res) => {
-//   res.render("products.ejs", {
-//     name: "velora",
-//   });
-// });
-
-// //Ex
-// app.get("/numbers", (req, res) => {
-//   let number = "";
-//   for (let i = 0; i <= 100; i++) {
-//     number += i + "-";
-//   }
-//   res.send(` numbers is ${number}`);
-// });
-
-// app.get("/products/:one/:two", (req, res) => {
-//   const numOne = req.params.one;
-//   const numTwo = req.params.two;
-//   const totall = Number(numOne) + Number(numTwo);
-//   res.send(`totall general ${totall}`);
-// });
-
-// // POST
-// app.post("/products", (req, res) => {
-//   res.send("Product created");
-// });
-
-// // PUT
-// app.put("/products/:id", (req, res) => {
-//   res.send(`Product ${req.params.id} updated`);
-// });
-
-// // DELETE
-// app.delete("/products/:id", (req, res) => {
-//   res.send(`Product ${req.params.id} deleted`);
-// });
-
-// app.get("/sayhello", (req, res) => {
-//   // console.log(req.body.age)
-//   // res.send(`Name is ${req.body.name} Age is ${req.query.age}`)
-//   res.json({
-//     name: req.body.name,
-//     age: req.query.age,
-//     price: "'55£",
-//     languge: "arabic",
-//   });
-// });
-
-app.get("/", (req, res) => {
-  res.json({ message: "Backend running on Vercel!" });
+// ===== GET PRODUCTS =====
+app.get("/api/products", (req, res) => {
+  res.json(products);
 });
-app.listen(3000, () => console.log("API running..."));
+
+// ===== POST ORDER (Save in MongoDB) =====
+app.post("/api/orders", async (req, res) => {
+  try {
+    const { productId, name, phone, quantity } = req.body;
+
+    // 1️⃣ Find product
+    const product = products.find((p) => p.id === productId);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // 2️⃣ Save FULL product info
+    const newOrder = new Order({
+      productId: {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        description:product.description
+      },
+      name,
+      phone,
+      quantity,
+    });
+
+    await newOrder.save();
+
+    res.status(201).json({
+      message: "Order saved successfully",
+      order: newOrder,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("API running on port " + PORT));
